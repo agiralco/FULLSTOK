@@ -52,9 +52,59 @@ class User {
 
   static async update(id, userData) {
     const { name, email, role, position, department, phone, address, hire_date, salary, is_active } = userData;
+    
+    // Build dynamic update query to handle partial updates
+    const updateFields = [];
+    const updateValues = [];
+    
+    if (name !== undefined) {
+      updateFields.push('name = ?');
+      updateValues.push(name);
+    }
+    if (email !== undefined) {
+      updateFields.push('email = ?');
+      updateValues.push(email);
+    }
+    if (role !== undefined) {
+      updateFields.push('role = ?');
+      updateValues.push(role);
+    }
+    if (position !== undefined) {
+      updateFields.push('position = ?');
+      updateValues.push(position);
+    }
+    if (department !== undefined) {
+      updateFields.push('department = ?');
+      updateValues.push(department);
+    }
+    if (phone !== undefined) {
+      updateFields.push('phone = ?');
+      updateValues.push(phone);
+    }
+    if (address !== undefined) {
+      updateFields.push('address = ?');
+      updateValues.push(address);
+    }
+    if (hire_date !== undefined) {
+      updateFields.push('hire_date = ?');
+      updateValues.push(hire_date);
+    }
+    if (salary !== undefined) {
+      updateFields.push('salary = ?');
+      updateValues.push(salary);
+    }
+    if (is_active !== undefined) {
+      updateFields.push('is_active = ?');
+      updateValues.push(is_active);
+    }
+    
+    if (updateFields.length === 0) {
+      return false; // No fields to update
+    }
+    
     const [result] = await db.query(
-      'UPDATE users SET name = ?, email = ?, role = ?, position = ?, department = ?, phone = ?, address = ?, hire_date = ?, salary = ?, is_active = ? WHERE id = ?',
-      [name, email, role, position, department, phone, address, hire_date, salary, is_active, id]
+      `UPDATE users SET ${updateFields.join(', ')} WHERE id = ?`,
+      [...updateValues, id]
     );
     return result.affectedRows > 0;
   }
