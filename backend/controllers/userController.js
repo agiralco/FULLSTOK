@@ -229,24 +229,26 @@ class UserController {
         validatedData.salary = salaryNum;
       }
 
-      // Check if user exists
-      let existingUser;
-      try {
-        existingUser = await User.findByEmail(validatedData.email);
-        if (existingUser && existingUser.id !== parseInt(req.params.id)) {
-          return res.status(409).json({
+      // Check if user exists (only for create, not update)
+      if (!req.params.id) {
+        let existingUser;
+        try {
+          existingUser = await User.findByEmail(validatedData.email);
+          if (existingUser) {
+            return res.status(409).json({
+              success: false,
+              message: 'Email already registered by another user',
+              field: 'email'
+            });
+          }
+        } catch (dbError) {
+          console.error('Database error during user lookup:', dbError);
+          return res.status(500).json({
             success: false,
-            message: 'Email already registered by another user',
-            field: 'email'
+            message: 'Database error during user creation',
+            error: 'Failed to check existing user'
           });
         }
-      } catch (dbError) {
-        console.error('Database error during user lookup:', dbError);
-        return res.status(500).json({
-          success: false,
-          message: 'Database error during user creation',
-          error: 'Failed to check existing user'
-        });
       }
 
       // Hash password
@@ -268,7 +270,7 @@ class UserController {
       let user;
       try {
         user = await User.create(validatedData);
-        this.createdUserId = user.id; // Store created user ID
+        UserController.createdUserId = user.id; // Store created user ID
       } catch (createError) {
         console.error('User creation error:', createError);
         return res.status(500).json({
@@ -493,10 +495,10 @@ class UserController {
       try {
         updateResult = await User.update(parseInt(id), validatedUpdateData);
         if (!updateResult) {
-          return res.status(500).json({
-            success: false,
+          return res.status(200).json({
+            success: true,
             message: 'No changes made to user',
-            error: 'Update operation failed'
+            data: { user: existingUser }
           });
         }
       } catch (updateError) {
@@ -559,6 +561,15 @@ class UserController {
             field: 'id'
           });
         }
+      }
+
+      // Prevent self-deletion
+      if (user.id === req.user.id) {
+        return res.status(403).json({
+          success: false,
+          message: 'Cannot delete your own account',
+          field: 'id'
+        });
       }
 
       // Delete user
