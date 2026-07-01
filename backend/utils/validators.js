@@ -29,11 +29,6 @@ class Validators {
       return { valid: false, message: 'Invalid email format' };
     }
 
-    // Check if email starts with "admin" (security requirement for auth only)
-    if (!trimmedEmail.startsWith('admin')) {
-      return { valid: false, message: 'Email must start with "admin" for authentication purposes' };
-    }
-
     return { valid: true, email: trimmedEmail };
   }
 
