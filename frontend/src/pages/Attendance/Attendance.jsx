@@ -51,6 +51,10 @@ export default function Attendance() {
     }
   }
 
+<<<<<<< HEAD
+=======
+  
+>>>>>>> origin/gojiberry
   useEffect(() => {
     fetchAttendance()
   }, [])
@@ -58,15 +62,40 @@ export default function Attendance() {
   const handleCheckIn = async () => {
     setActionLoading('checkin')
     setError('')
+<<<<<<< HEAD
     try {
       const res = await axiosInstance.post('/attendance/checkin', { notes })
+=======
+  
+    try {
+      const user = JSON.parse(localStorage.getItem('user'))
+  
+      const res = await axiosInstance.post('/attendance/checkin', {
+        user_id: user.id,
+        date: new Date().toISOString().slice(0, 10),
+        check_in: new Date().toTimeString().slice(0, 8),
+        notes
+      })
+  
+>>>>>>> origin/gojiberry
       setLastCheckIn(formatTime())
       showToast('Checked in successfully!')
       setNotes('')
       await fetchAttendance()
+<<<<<<< HEAD
       return res
     } catch (err) {
       setError('Failed to check in. Please try again.')
+=======
+  
+      return res
+    } catch (err) {
+      console.error(err.response?.data)
+      setError(
+        err.response?.data?.message ||
+        'Failed to check in'
+      )
+>>>>>>> origin/gojiberry
     } finally {
       setActionLoading(null)
     }
@@ -75,6 +104,7 @@ export default function Attendance() {
   const handleCheckOut = async () => {
     setActionLoading('checkout')
     setError('')
+<<<<<<< HEAD
     try {
       const res = await axiosInstance.post('/attendance/checkout', { notes })
       showToast('Checked out successfully!')
@@ -83,6 +113,28 @@ export default function Attendance() {
       return res
     } catch (err) {
       setError('Failed to check out. Please try again.')
+=======
+  
+    try {
+      const user = JSON.parse(localStorage.getItem('user'))
+  
+      const res = await axiosInstance.post('/attendance/checkout', {
+        user_id: user.id,
+        check_out: new Date().toTimeString().slice(0, 8)
+      })
+  
+      showToast('Checked out successfully!')
+      await fetchAttendance()
+  
+      return res
+    } catch (err) {
+      console.log(err.response?.data)
+  
+      setError(
+        err.response?.data?.message ||
+        'Failed to check out'
+      )
+>>>>>>> origin/gojiberry
     } finally {
       setActionLoading(null)
     }
