@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import axiosInstance from '../utils/axiosInstance'
 import { useAuth } from '../context/AuthContext'
+import EmployeeDashboard from './EmployeeDashboard'
 
 const stats = [
   {
@@ -120,6 +121,10 @@ export default function Dashboard() {
         { ...stats[3], value: String(summary.announcements ?? stats[3].value) },
       ]
     : stats
+
+  if (!isAdmin) {
+    return <EmployeeDashboard />
+  }
 
   return (
     <div className="space-y-6">

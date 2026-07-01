@@ -1,5 +1,6 @@
 // Task Owner: Team FULLSTOK - UI
 import { NavLink } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 
 const navItems = [
   {
@@ -50,6 +51,9 @@ const navItems = [
 ]
 
 export default function Sidebar({ open, onClose }) {
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'admin'
+
   return (
     <>
       {open && (
@@ -77,7 +81,12 @@ export default function Sidebar({ open, onClose }) {
         </div>
 
         <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
-          {navItems.map((item) => (
+          {navItems
+            .filter((item) => {
+              if (item.to === '/directory' && !isAdmin) return false
+              return true
+            })
+            .map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
