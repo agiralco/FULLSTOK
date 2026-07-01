@@ -3,13 +3,25 @@ const db = require('../config/database');
 
 class Attendances {
   static async create(attendanceData) {
-    const { user_id, date, check_in, check_out } = attendanceData;
+    const {
+      user_id,
+      date,
+      check_in,
+      check_out,
+      notes
+    } = attendanceData;
   
     const [result] = await db.query(
       `INSERT INTO attendance
-      (user_id, date, check_in, check_out)
-      VALUES (?, ?, ?, ?)`,
-      [user_id, date, check_in, check_out || null]
+      (user_id, date, check_in, check_out, notes)
+      VALUES (?, ?, ?, ?, ?)`,
+      [
+        user_id,
+        date,
+        check_in,
+        check_out || null,
+        notes || null
+      ]
     );
   
     return {
@@ -17,7 +29,8 @@ class Attendances {
       user_id,
       date,
       check_in,
-      check_out
+      check_out,
+      notes
     };
   } 
 

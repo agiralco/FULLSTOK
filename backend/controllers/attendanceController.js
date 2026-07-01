@@ -19,7 +19,8 @@ class AttendanceController {
       const attendance = await Attendance.create({
         user_id,
         date,
-        check_in
+        check_in,
+        notes
       });
 
       res.status(201).json({
@@ -102,76 +103,55 @@ class AttendanceController {
   }
 
   static async getAllAttendance(req, res) {
-    try {
-      const { date, user_id, status, page = 1, limit = 10 } = req.query;
-      
-      let attendance;
-      
-      if (date && user_id) {
-        attendance = await Attendance.findByUserIdAndDate(user_id, date);
-      } else if (date) {
+  try {
+    const {
+      user_id,
+      role,
+      date,
+      status,
+      page = 1,
+      limit = 10
+    } = req.query;
+
+    let attendance = [];
+
+    if (role === "admin") {
+      if (date) {
         attendance = await Attendance.findByDate(date);
-      } else if (user_id) {
-        attendance = await Attendance.findByUserId(user_id);
       } else if (status) {
         attendance = await Attendance.findByStatus(status);
       } else {
         attendance = await Attendance.getAll();
       }
-
-      // Pagination for large datasets  
-      const startIndex = (page - 1) * limit;
-      const endIndex = startIndex + parseInt(limit);
-      const paginatedAttendance = attendance.slice(startIndex, endIndex);
-
-      res.json({
-        success: true,
-        message: 'Attendance retrieved successfully',
-        data: {
-          attendance: paginatedAttendance,
-          pagination: {
-            current_page: parseInt(page),
-            per_page: parseInt(limit),
-            total: attendance.length,
-            total_pages: Math.ceil(attendance.length / limit)
-          },
-          filters: {
-            date: date || null,
-            user_id: user_id || null,
-            status: status || null
-          }
-        }
-      });
-    } catch (error) {
-      console.error('Get all attendance error:', error);
-      
-      // Handle specific database errors
-      if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
-        return res.status(503).json({
-          success: false,
-          message: 'Database connection failed',
-          error: 'Unable to connect to database. Please try again later.',
-          code: 'DATABASE_UNAVAILABLE'
-        });
-      }
-      
-      if (error.code === 'ER_ACCESS_DENIED_ERROR') {
-        return res.status(500).json({
-          success: false,
-          message: 'Database access error',
-          error: 'Database permission denied',
-          code: 'DATABASE_ACCESS_ERROR'
-        });
-      }
-      
-      res.status(500).json({
-        success: false,
-        message: 'Failed to retrieve attendance data',
-        error: 'An unexpected error occurred while fetching attendance records',
-        code: 'INTERNAL_SERVER_ERROR'
-      });
+    } else {
+      attendance = await Attendance.findByUserId(user_id, date);
     }
+
+    const start = (Number(page) - 1) * Number(limit);
+    const end = start + Number(limit);
+
+    res.json({
+      success: true,
+      data: {
+        attendance: attendance.slice(start, end),
+        pagination: {
+          current_page: Number(page),
+          per_page: Number(limit),
+          total: attendance.length,
+          total_pages: Math.ceil(attendance.length / Number(limit))
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
+}
 
   static async getAttendanceSummary(req, res) {
     try {

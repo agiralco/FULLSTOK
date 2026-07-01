@@ -220,6 +220,16 @@ class AnnouncementController {
       }
 
       // Update view count
+      console.log("REQ BODY:", req.body);
+
+console.log("UPDATE DATA:", {
+    title: title.trim(),
+    content: content.trim(),
+    category,
+    priority,
+    is_active: is_active ?? true,
+    expiry_date: expiry_date || null
+});
       await Announcement.updateViewCount(id);
 
       res.json({
@@ -242,7 +252,19 @@ class AnnouncementController {
       const { title, content, category, priority, is_active, expiry_date } = req.body;
       const validCategories = ['general', 'policy', 'event', 'urgent'];
       const validPriorities = ['low', 'medium', 'high'];
-      if (!validCategories.includes(category))
+      if (!validCategories.includes(category)) {
+  return res.status(400).json({
+    success: false,
+    message: 'Invalid category'
+  });
+}
+
+if (!validPriorities.includes(priority)) {
+  return res.status(400).json({
+    success: false,
+    message: 'Invalid priority'
+  });
+}
 
       // Validation
       if (!title || !content) {
@@ -253,12 +275,12 @@ class AnnouncementController {
       }
 
       const updated = await Announcement.update(id, {
-        title,
-        content,
-        category,
-        priority,
-        is_active,
-        expiry_date
+          title: title.trim(),
+          content: content.trim(),
+          category,
+          priority,
+          is_active: is_active ?? true,
+          expiry_date: expiry_date || null
       });
 
       if (!updated) {

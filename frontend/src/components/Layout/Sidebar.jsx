@@ -83,26 +83,29 @@ export default function Sidebar({ open, onClose }) {
         <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
           {navItems
             .filter((item) => {
-              if (item.to === '/directory' && !isAdmin) return false
+              // SEKARANG: Menyembunyikan Directory & Announcements untuk user biasa
+              if (['/directory', '/announcements'].includes(item.to) && !isAdmin) {
+                return false
+              }
               return true
             })
             .map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              onClick={onClose}
-              className={({ isActive }) =>
-                `group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
-                  isActive
-                    ? 'bg-primary-50 text-primary-700'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                }`
-              }
-            >
-              {item.icon}
-              {item.label}
-            </NavLink>
-          ))}
+              <NavLink
+                key={item.to}
+                to={item.to}
+                onClick={onClose}
+                className={({ isActive }) =>
+                  `group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? 'bg-primary-50 text-primary-700'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  }`
+                }
+              >
+                {item.icon}
+                {item.label}
+              </NavLink>
+            ))}
         </nav>
 
         <div className="border-t border-gray-200 p-4">
@@ -114,4 +117,4 @@ export default function Sidebar({ open, onClose }) {
       </aside>
     </>
   )
-}
+} 

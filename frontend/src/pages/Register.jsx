@@ -1,194 +1,223 @@
-import { useState } from 'react';
-import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
+// Task Owner: Auth FE - Register View
+import { useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import axiosInstance from '../utils/axiosInstance'
 
 export default function Register() {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    role: 'user'
-  });
+    role: 'user',
+    position: '',
+    department: '',
+  })
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
+    setLoading(true)
+    setError('')
 
     try {
-      setLoading(true);
-      setError('');
-
-      const response = await axios.post(
-        'http://localhost:5000/api/auth/register',
-        formData
-      );
-
-      alert(response.data.message || 'Registrasi berhasil');
-      navigate('/login');
+      const response = await axiosInstance.post('/auth/register', formData)
+      alert(response.data.message || 'Registrasi berhasil!')
+      navigate('/login')
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-        'Registrasi gagal'
-      );
-    } finally {
-      setLoading(false);
+      setError(err.response?.data?.message || 'Registrasi gagal. Silakan coba lagi.')
+    } finally { // <--- PERBAIKAN: Huruf L-nya sudah dua sekarang
+      setLoading(false)
     }
-  };
+  }
 
   return (
-    <div
-      className="d-flex align-items-center justify-content-center"
-      style={{
-        minHeight: '100vh',
-        background:
-          'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)'
-      }}
-    >
-      <div
-        className="card border-0 shadow-lg"
-        style={{
-          width: '100%',
-          maxWidth: '450px',
-          borderRadius: '20px'
-        }}
-      >
-        <div className="card-body p-5">
-          <div className="text-center mb-4">
-            <div
-              style={{
-                width: 70,
-                height: 70,
-                borderRadius: '50%',
-                background: '#EEF2FF',
-                margin: '0 auto 15px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '30px'
-              }}
-            >
-              👤
-            </div>
-
-            <h2 className="fw-bold">Create Account</h2>
-
-            <p className="text-muted">
-              Register to access FULLSTOK HR Dashboard
-            </p>
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 via-primary-50 to-accent-50 p-4">
+      <div className="w-full max-w-lg"> 
+        
+        {/* Header Section */}
+        <div className="mb-6 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-600 shadow-lg shadow-primary-600/30">
+            <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+            </svg>
           </div>
+          <h1 className="text-2xl font-bold text-gray-900">Join FULLSTOK</h1>
+          <p className="mt-1 text-sm text-gray-500">Create your employee account to get started</p>
+        </div>
 
-          {error && (
-            <div className="alert alert-danger">
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <label className="form-label fw-semibold">
+        {/* Card Form */}
+        <div className="card p-6 sm:p-8">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            
+            {/* Full Name */}
+            <div>
+              <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-gray-700">
                 Full Name
               </label>
-
-              <input
-                type="text"
-                name="name"
-                className="form-control form-control-lg"
-                placeholder="Enter your full name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-              />
+              <div className="relative">
+                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </span>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="John Doe"
+                  className="input-field pl-10 w-full"
+                />
+              </div>
             </div>
 
-            <div className="mb-3">
-              <label className="form-label fw-semibold">
+            {/* Email Address */}
+            <div>
+              <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-gray-700">
                 Email Address
               </label>
-
-              <input
-                type="email"
-                name="email"
-                className="form-control form-control-lg"
-                placeholder="Enter your email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
+              <div className="relative">
+                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </span>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="you@company.com"
+                  className="input-field pl-10 w-full"
+                />
+              </div>
             </div>
 
-            <div className="mb-3">
-              <label className="form-label fw-semibold">
+            {/* Password */}
+            <div>
+              <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-gray-700">
                 Password
               </label>
-
-              <input
-                type="password"
-                name="password"
-                className="form-control form-control-lg"
-                placeholder="Create password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
+              <div className="relative">
+                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </span>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  className="input-field pl-10 w-full"
+                />
+              </div>
             </div>
 
-            <div className="mb-4">
-              <label className="form-label fw-semibold">
-                Account Role
-              </label>
+            {/* Position & Department */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="position" className="mb-1.5 block text-sm font-medium text-gray-700">
+                  Position
+                </label>
+                <input
+                  id="position"
+                  name="position"
+                  type="text"
+                  required
+                  value={formData.position}
+                  onChange={handleChange}
+                  placeholder="e.g. Web Developer"
+                  className="input-field w-full"
+                />
+              </div>
 
+              <div>
+                <label htmlFor="department" className="mb-1.5 block text-sm font-medium text-gray-700">
+                  Department
+                </label>
+                <input
+                  id="department"
+                  name="department"
+                  type="text"
+                  required
+                  value={formData.department}
+                  onChange={handleChange}
+                  placeholder="e.g. Human Resources"
+                  className="input-field w-full"
+                />
+              </div>
+            </div>
+
+            {/* System Access Role */}
+            <div>
+              <label htmlFor="role" className="mb-1.5 block text-sm font-medium text-gray-700">
+                System Access Role
+              </label>
               <select
+                id="role"
                 name="role"
-                className="form-select form-select-lg"
                 value={formData.role}
                 onChange={handleChange}
+                className="input-field w-full bg-white px-3"
               >
-                <option value="user">Employee</option>
-                <option value="admin">Administrator</option>
+                <option value="user">Employee (Regular)</option>
+                <option value="admin">HR Administrator</option>
               </select>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn btn-primary btn-lg w-100"
-              style={{
-                borderRadius: '12px'
-              }}
-            >
-              {loading
-                ? 'Creating Account...'
-                : 'Create Account'}
+            {/* Error Message */}
+            {error && (
+              <div className="rounded-lg border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
+                {error}
+              </div>
+            )}
+
+            {/* Submit Button */}
+            <button type="submit" disabled={loading} className="btn-primary w-full mt-2">
+              {loading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <svg className="h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  <span>Creating Account...</span>
+                </div>
+              ) : (
+                'Create Account'
+              )}
             </button>
           </form>
 
-          <hr className="my-4" />
-
-          <div className="text-center">
-            <span className="text-muted">
-              Already have an account?
-            </span>
-
-            <Link
-              to="/login"
-              className="text-decoration-none fw-bold ms-2"
-            >
+          {/* Footer Navigation */}
+          <p className="mt-5 text-center text-sm text-gray-600">
+            Already have an account?{' '}
+            <Link to="/login" className="font-medium text-primary-600 transition hover:text-primary-700">
               Sign In
             </Link>
-          </div>
+          </p>
         </div>
+
+        <p className="mt-6 text-center text-xs text-gray-400">
+          © 2026 FULLSTOK HR Dashboard. All rights reserved.
+        </p>
       </div>
     </div>
-  );
+  )
 }

@@ -1,6 +1,6 @@
 // Task Owner: Gilang Ramadan - Auth FE
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom' // PERBAIKAN: Tambahkan import Link
 import axiosInstance from '../utils/axiosInstance'
 import { useAuth } from '../context/AuthContext'
 
@@ -150,6 +150,14 @@ export default function Login() {
                 'Sign in'
               )}
             </button>
+
+            {/* PERBAIKAN: Section Navigasi ke Halaman Register */}
+            <div className="mt-4 text-center text-sm text-gray-600">
+              Don't have an account?{' '}
+              <Link to="/register" className="font-semibold text-primary-600 transition hover:text-primary-700 underline-offset-4 hover:underline">
+                Sign up
+              </Link>
+            </div>
           </form>
         </div>
 

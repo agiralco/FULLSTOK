@@ -38,19 +38,40 @@ export default function Attendance() {
   }
 
   const fetchAttendance = async () => {
-    setLoading(true)
-    setError('')
-    try {
-      const res = await axiosInstance.get('/attendance')
-      // PERBAIKAN: Ubah menjadi res.data.data.attendance
-      setRecords(res.data.data.attendance)
-    } catch (err) {
-      setError('Failed to fetch attendance records. Please try again.')
-    } finally {
-      setLoading(false)
-    }
-  }
+  setLoading(true)
+  setError('')
 
+  try {
+    const user = JSON.parse(localStorage.getItem('user'))
+
+    const res = await axiosInstance.get('/attendance', {
+      params: {
+        user_id: user.id,
+        role: user.role
+      }
+    })
+
+    setRecords(res.data.data.attendance)
+
+    const today = new Date().toISOString().slice(0, 10)
+
+    const todayAttendance = res.data.data.attendance.find(
+      item => item.date.slice(0, 10) === today
+    )
+
+    if (todayAttendance) {
+      setLastCheckIn(todayAttendance.check_in)
+    }
+
+  } catch (err) {
+    setError(
+      err.response?.data?.message ||
+      'Failed to fetch attendance records.'
+    )
+  } finally {
+    setLoading(false)
+  }
+}
   
   useEffect(() => {
     fetchAttendance()
@@ -267,22 +288,40 @@ export default function Attendance() {
                 </tr>
               ) : (
                 records?.map((r) => (
-                  <tr key={r.id} className="transition hover:bg-gray-50">
-                    <td className="px-6 py-4 font-medium text-gray-900">{r.date}</td>
-                    <td className="px-6 py-4 text-gray-600">{r.checkIn || '—'}</td>
-                    <td className="px-6 py-4 text-gray-600">{r.checkOut || '—'}</td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
-                          statusStyles[r.status] || statusStyles.present
-                        }`}
-                      >
-                        {r.status || 'present'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-gray-600">{r.notes || '—'}</td>
-                  </tr>
-                ))
+  <tr key={r.id} className="transition hover:bg-gray-50">
+
+    <td className="px-6 py-4 font-medium text-gray-900">
+      {new Date(r.date).toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      })}
+    </td>
+
+    <td className="px-6 py-4 text-gray-600">
+      {r.check_in || '—'}
+    </td>
+
+    <td className="px-6 py-4 text-gray-600">
+      {r.check_out || '—'}
+    </td>
+
+    <td className="px-6 py-4">
+      <span
+        className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
+          statusStyles[r.status] || statusStyles.present
+        }`}
+      >
+        {r.status || 'present'}
+      </span>
+    </td>
+
+    <td className="px-6 py-4 text-gray-600">
+      {r.notes || '—'}
+    </td>
+
+  </tr>
+))
               )}
             </tbody>
           </table>

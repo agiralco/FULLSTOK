@@ -98,14 +98,30 @@ class Announcement {
     return result.affectedRows > 0;
   }
 
-  static async update(id, announcementData) {
-    const { title, content, category, priority, is_active, expiry_date } = announcementData;
-    const [result] = await db.query(
-      'UPDATE announcements SET title = ?, content = ?, category = ?, priority = ?, is_active = ?, expiry_date = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-      [title, content, category, priority, is_active, expiry_date, id]
-    );
-    return result.affectedRows > 0;
-  }
+  static async update(id, data) {
+  const fields = [];
+  const values = [];
+
+  Object.keys(data).forEach((key) => {
+    if (data[key] !== undefined) {
+      fields.push(`${key} = ?`);
+      values.push(data[key]);
+    }
+  });
+
+  fields.push("updated_at = CURRENT_TIMESTAMP");
+
+  values.push(id);
+
+  const [result] = await db.query(
+    `UPDATE announcements
+     SET ${fields.join(", ")}
+     WHERE id = ?`,
+    values
+  );
+
+  return result.affectedRows > 0;
+}
 
   static async delete(id) {
     const [result] = await db.query(

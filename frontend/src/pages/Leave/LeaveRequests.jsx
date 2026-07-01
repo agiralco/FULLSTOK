@@ -152,30 +152,62 @@ export default function LeaveRequests() {
   }
 
   const handleApprove = async (id) => {
-    setActionLoading(`approve-${id}`)
-    try {
-      await axiosInstance.post(`/leave/${id}/approve`)
-      showToast('Leave approved!')
-      await fetchLeave()
-    } catch (err) {
-      setError('Failed to approve leave.')
-    } finally {
-      setActionLoading(null)
-    }
+  setActionLoading(`approve-${id}`)
+  setError('')
+
+  try {
+    await axiosInstance.post(`/leave/${id}/approve`, {
+      approved_by: user.id
+    })
+
+    showToast('Leave approved!')
+    fetchLeave()
+  } catch (err) {
+    console.log(err.response?.data)
+
+    setError(
+      err.response?.data?.message ||
+      'Failed to approve leave.'
+    )
+  } finally {
+    setActionLoading(null)
   }
+}
 
   const handleReject = async (id) => {
-    setActionLoading(`reject-${id}`)
-    try {
-      await axiosInstance.post(`/leave/${id}/reject`)
-      showToast('Leave rejected.')
-      await fetchLeave()
-    } catch (err) {
-      setError('Failed to reject leave.')
-    } finally {
+  setActionLoading(`reject-${id}`)
+  setError('')
+
+  try {
+
+    const reason = prompt("Reason for rejection")
+
+    if (!reason) {
       setActionLoading(null)
+      return
     }
+
+    await axiosInstance.post(`/leave/${id}/reject`, {
+      approved_by: user.id,
+      rejection_reason: reason
+    })
+
+    showToast('Leave rejected!')
+    fetchLeave()
+
+  } catch (err) {
+
+    console.log(err.response?.data)
+
+    setError(
+      err.response?.data?.message ||
+      'Failed to reject leave.'
+    )
+
+  } finally {
+    setActionLoading(null)
   }
+}
 
   return (
     <div className="space-y-6">
@@ -259,10 +291,10 @@ export default function LeaveRequests() {
                     <td className="px-6 py-4">
                       <span
                         className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
-                          statusStyles[r.status] || statusStyles.pending
+                          statusStyles[r.status?.toLowerCase()] || statusStyles.pending
                         }`}
                       >
-                        {r.status || 'pending'}
+                        {r.status?.toLowerCase() || 'pending'}
                       </span>
                     </td>
                     <td className="px-6 py-4 max-w-xs text-gray-600">
@@ -271,7 +303,7 @@ export default function LeaveRequests() {
                     {isAdmin && (
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-1.5">
-                          {r.status === 'pending' ? (
+                          {r.status?.toLowerCase() === 'pending' ? (
                             <>
                               <button
                                 type="button"
