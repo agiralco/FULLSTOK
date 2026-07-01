@@ -103,7 +103,7 @@ class Validators {
     }
 
     const trimmedRole = role.trim().toLowerCase();
-    const validRoles = ['admin', 'user'];
+    const validRoles = ['admin', 'user', 'employee', 'manager'];
 
     if (!validRoles.includes(trimmedRole)) {
       return { valid: false, message: `Role must be one of: ${validRoles.join(', ')}` };
@@ -126,12 +126,11 @@ class Validators {
       return emailValidation;
     }
 
-    const passwordValidation = this.validatePassword(password);
-    if (!passwordValidation.valid) {
-      return passwordValidation;
+    if (!password || typeof password !== 'string' || password.trim().length === 0) {
+      return { valid: false, message: 'Password is required' };
     }
 
-    return { valid: true, email: emailValidation.email, password: passwordValidation.password };
+    return { valid: true, email: emailValidation.email, password: password.trim() };
   }
 
   static validateRegisterInput(name, email, password, role) {

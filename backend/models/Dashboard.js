@@ -23,8 +23,8 @@ class Dashboard {
         COUNT(CASE WHEN status = 'absent' THEN 1 END) as absent_count,
         COUNT(CASE WHEN status = 'late' THEN 1 END) as late_count,
         COUNT(CASE WHEN status = 'permission' THEN 1 END) as permission_count,
-        COUNT(CASE WHEN check_in_time IS NOT NULL THEN 1 END) as checked_in_count,
-        COUNT(CASE WHEN check_out_time IS NOT NULL THEN 1 END) as checked_out_count
+        COUNT(CASE WHEN check_in IS NOT NULL THEN 1 END) as checked_in_count,
+        COUNT(CASE WHEN check_out IS NOT NULL THEN 1 END) as checked_out_count
       FROM attendance
     `;
     

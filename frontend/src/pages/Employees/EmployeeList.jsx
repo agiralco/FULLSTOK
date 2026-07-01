@@ -113,7 +113,7 @@ export default function EmployeeList() {
       setModalOpen(false)
       await fetchUsers()
     } catch (err) {
-      setError('Failed to save user. Please try again.')
+      setError(err.response?.data?.message || 'Failed to save user. Please try again.')
     } finally {
       setSubmitting(false)
     }
