@@ -52,7 +52,6 @@ export default function Attendance() {
   }
 
   
-
   useEffect(() => {
     fetchAttendance()
   }, [])
@@ -71,7 +70,6 @@ export default function Attendance() {
         notes
       })
   
-
       setLastCheckIn(formatTime())
       showToast('Checked in successfully!')
       setNotes('')
@@ -84,7 +82,6 @@ export default function Attendance() {
         err.response?.data?.message ||
         'Failed to check in'
       )
-
     } finally {
       setActionLoading(null)
     }
@@ -93,20 +90,6 @@ export default function Attendance() {
   const handleCheckOut = async () => {
     setActionLoading('checkout')
     setError('')
-    try {
-      const user = JSON.parse(localStorage.getItem('user'))
-  
-      const res = await axiosInstance.post('/attendance/checkout', {
-        user_id: user.id,
-        check_out: new Date().toTimeString().slice(0, 8)
-      })
-  
-      showToast('Checked out successfully!')
-      await fetchAttendance()
-  
-      return res
-    } catch (err) {
-      setError('Failed to check out. Please try again.')
   
     try {
       const user = JSON.parse(localStorage.getItem('user'))
@@ -127,7 +110,6 @@ export default function Attendance() {
         err.response?.data?.message ||
         'Failed to check out'
       )
-
     } finally {
       setActionLoading(null)
     }

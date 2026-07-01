@@ -29,12 +29,6 @@ class Validators {
       return { valid: false, message: 'Invalid email format' };
     }
 
-    // Check if email starts with "admin" (security requirement for auth only)
-    if (!trimmedEmail.startsWith('admin')) {
-      return { valid: false, message: 'Email must start with "admin" for authentication purposes' };
-
-    }
-
     return { valid: true, email: trimmedEmail };
   }
 
@@ -50,7 +44,6 @@ class Validators {
     }
 
     if (trimmedPassword.length < 2) {
-
       return { valid: false, message: 'Password must be at least 6 characters long' };
     }
 
@@ -124,7 +117,6 @@ class Validators {
 
   static validateLoginInput(email, password) {
     const emailValidation = this.validateAuthEmail(email);
-
     if (!emailValidation.valid) {
       return emailValidation;
     }
@@ -150,7 +142,6 @@ class Validators {
     const passwordValidation = this.validatePassword(password);
     if (!passwordValidation.valid) {
       return passwordValidation;
-
     }
 
     const roleValidation = this.validateRole(role);
@@ -163,7 +154,6 @@ class Validators {
       name: nameValidation.name, 
       email: emailValidation.email, 
       password: passwordValidation.password,
-
       role: roleValidation.role
     };
   }
