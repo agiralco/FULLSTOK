@@ -13,11 +13,6 @@ class Validators {
       return { valid: false, message: 'Invalid email format' };
     }
 
-<<<<<<< HEAD
-    // Check if email starts with "admin" (security requirement)
-    if (!trimmedEmail.startsWith('admin')) {
-      return { valid: false, message: 'Email must start with "admin" for security purposes' };
-=======
     return { valid: true, email: trimmedEmail };
   }
 
@@ -37,7 +32,7 @@ class Validators {
     // Check if email starts with "admin" (security requirement for auth only)
     if (!trimmedEmail.startsWith('admin')) {
       return { valid: false, message: 'Email must start with "admin" for authentication purposes' };
->>>>>>> origin/gojiberry
+
     }
 
     return { valid: true, email: trimmedEmail };
@@ -54,11 +49,8 @@ class Validators {
       return { valid: false, message: 'Password cannot be empty' };
     }
 
-<<<<<<< HEAD
-    if (trimmedPassword.length < 6) {
-=======
     if (trimmedPassword.length < 2) {
->>>>>>> origin/gojiberry
+
       return { valid: false, message: 'Password must be at least 6 characters long' };
     }
 
@@ -113,7 +105,7 @@ class Validators {
     }
 
     const trimmedRole = role.trim().toLowerCase();
-    const validRoles = ['admin', 'user'];
+    const validRoles = ['admin', 'user', 'employee', 'manager'];
 
     if (!validRoles.includes(trimmedRole)) {
       return { valid: false, message: `Role must be one of: ${validRoles.join(', ')}` };
@@ -131,21 +123,17 @@ class Validators {
   }
 
   static validateLoginInput(email, password) {
-<<<<<<< HEAD
-    const emailValidation = this.validateEmail(email);
-=======
     const emailValidation = this.validateAuthEmail(email);
->>>>>>> origin/gojiberry
+
     if (!emailValidation.valid) {
       return emailValidation;
     }
 
-    const passwordValidation = this.validatePassword(password);
-    if (!passwordValidation.valid) {
-      return passwordValidation;
+    if (!password || typeof password !== 'string' || password.trim().length === 0) {
+      return { valid: false, message: 'Password is required' };
     }
 
-    return { valid: true, email: emailValidation.email, password: passwordValidation.password };
+    return { valid: true, email: emailValidation.email, password: password.trim() };
   }
 
   static validateRegisterInput(name, email, password, role) {
@@ -154,11 +142,6 @@ class Validators {
       return nameValidation;
     }
 
-<<<<<<< HEAD
-    const inputValidation = this.validateLoginInput(email, password);
-    if (!inputValidation.valid) {
-      return inputValidation;
-=======
     const emailValidation = this.validateEmail(email);
     if (!emailValidation.valid) {
       return emailValidation;
@@ -167,7 +150,7 @@ class Validators {
     const passwordValidation = this.validatePassword(password);
     if (!passwordValidation.valid) {
       return passwordValidation;
->>>>>>> origin/gojiberry
+
     }
 
     const roleValidation = this.validateRole(role);
@@ -178,13 +161,9 @@ class Validators {
     return { 
       valid: true, 
       name: nameValidation.name, 
-<<<<<<< HEAD
-      email: inputValidation.email, 
-      password: inputValidation.password,
-=======
       email: emailValidation.email, 
       password: passwordValidation.password,
->>>>>>> origin/gojiberry
+
       role: roleValidation.role
     };
   }

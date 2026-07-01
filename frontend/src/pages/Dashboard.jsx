@@ -1,6 +1,8 @@
 // Task Owner: Team FULLSTOK - Dashboard
 import { useEffect, useState } from 'react'
 import axiosInstance from '../utils/axiosInstance'
+import { useAuth } from '../context/AuthContext'
+import EmployeeDashboard from './EmployeeDashboard'
 
 const stats = [
   {
@@ -91,6 +93,8 @@ const activityIcon = {
 }
 
 export default function Dashboard() {
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'admin'
   const [summary, setSummary] = useState(null)
 
   useEffect(() => {
@@ -117,6 +121,10 @@ export default function Dashboard() {
         { ...stats[3], value: String(summary.announcements ?? stats[3].value) },
       ]
     : stats
+
+  if (!isAdmin) {
+    return <EmployeeDashboard />
+  }
 
   return (
     <div className="space-y-6">
@@ -199,24 +207,28 @@ export default function Dashboard() {
           <h3 className="text-base font-semibold text-gray-900">Quick Actions</h3>
           <p className="mt-1 text-sm text-gray-500">Common tasks at your fingertips.</p>
           <div className="mt-4 space-y-2.5">
-            <a href="/directory" className="flex items-center gap-3 rounded-lg border border-gray-200 px-3.5 py-2.5 text-sm font-medium text-gray-700 transition hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700">
-              <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-              </svg>
-              Add Employee
-            </a>
+            {isAdmin && (
+              <a href="/directory" className="flex items-center gap-3 rounded-lg border border-gray-200 px-3.5 py-2.5 text-sm font-medium text-gray-700 transition hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700">
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+                Add Employee
+              </a>
+            )}
             <a href="/attendance" className="flex items-center gap-3 rounded-lg border border-gray-200 px-3.5 py-2.5 text-sm font-medium text-gray-700 transition hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700">
               <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               Check In Now
             </a>
-            <a href="/announcements" className="flex items-center gap-3 rounded-lg border border-gray-200 px-3.5 py-2.5 text-sm font-medium text-gray-700 transition hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700">
-              <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              Post Announcement
-            </a>
+            {isAdmin && (
+              <a href="/announcements" className="flex items-center gap-3 rounded-lg border border-gray-200 px-3.5 py-2.5 text-sm font-medium text-gray-700 transition hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700">
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Post Announcement
+              </a>
+            )}
           </div>
         </div>
       </div>

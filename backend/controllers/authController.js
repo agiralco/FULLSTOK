@@ -144,15 +144,6 @@ class AuthController {
       }
 
       // Check user status
-<<<<<<< HEAD
-      if (!user.is_active) {
-        return res.status(401).json({
-          success: false,
-          message: 'Account is deactivated',
-          field: 'account'
-        });
-      }
-=======
       // if (!user.is_active) {
       //   return res.status(401).json({
       //     success: false,
@@ -160,7 +151,7 @@ class AuthController {
       //     field: 'account'
       //   });
       // }
->>>>>>> origin/gojiberry
+
 
       // Check password
       let isValidPassword;
@@ -244,16 +235,8 @@ class AuthController {
             email: user.email,
             role: user.role,
             position: user.position,
-<<<<<<< HEAD
-            department: user.department,
-            phone: user.phone,
-            address: user.address,
-            hire_date: user.hire_date,
-            salary: user.salary,
-            is_active: user.is_active
-=======
             department: user.department
->>>>>>> origin/gojiberry
+
           }
         }
       });

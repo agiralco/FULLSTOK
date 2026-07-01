@@ -9,7 +9,12 @@ const authorize = (roles) => {
     }
 
     // Convert single role to array for consistency
-    const allowedRoles = Array.isArray(roles) ? roles : [roles];
+    let allowedRoles = Array.isArray(roles) ? [...roles] : [roles];
+    
+    // Map 'user' allowed role to also accept 'employee' and 'manager'
+    if (allowedRoles.includes('user')) {
+      allowedRoles.push('employee', 'manager');
+    }
     
     if (!allowedRoles.includes(req.user.role)) {
       return res.status(403).json({

@@ -3,14 +3,20 @@ const db = require('../config/database');
 
 class User {
   static async create(userData) {
-<<<<<<< HEAD
-    const { name, email, password, role = 'user', position, department, phone, address, hire_date, salary } = userData;
     const [result] = await db.query(
-      'INSERT INTO users (name, email, password, role, position, department, phone, address, hire_date, salary) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [name, email, password, role, position, department, phone, address, hire_date, salary]
+      `INSERT INTO users
+        (name,email,password,position,department,role)
+        VALUES (?,?,?,?,?,?)`,
+      [
+        name,
+        email,
+        password,
+        position,
+        department,
+        role
+      ]
     );
     return { id: result.insertId, ...userData };
-=======
     const {
       name,
       email,
@@ -44,17 +50,11 @@ class User {
       position,
       department
     };
->>>>>>> origin/gojiberry
+
   }
 
   static async findByEmail(email) {
     const [rows] = await db.query(
-<<<<<<< HEAD
-      'SELECT id, name, email, password, role, position, department, phone, address, hire_date, salary, is_active, created_at FROM users WHERE email = ?',
-      [email]
-    );
-    return rows[0] || null;
-=======
       `SELECT 
         id,
         name,
@@ -75,17 +75,11 @@ class User {
       ...rows[0],
       role: rows[0].is_admin ? 'admin' : 'user'
     };
->>>>>>> origin/gojiberry
+
   }
 
   static async findById(id) {
     const [rows] = await db.query(
-<<<<<<< HEAD
-      'SELECT id, name, email, role, position, department, phone, address, hire_date, salary, is_active, created_at FROM users WHERE id = ?',
-      [id]
-    );
-    return rows[0] || null;
-=======
       `SELECT
         id,
         name,
@@ -105,16 +99,15 @@ class User {
       ...rows[0],
       role: rows[0].is_admin ? 'admin' : 'user'
     };
->>>>>>> origin/gojiberry
+
   }
 
   static async getAll() {
     const [rows] = await db.query(
-<<<<<<< HEAD
-      'SELECT id, name, email, role, position, department, phone, address, hire_date, salary, is_active, created_at FROM users ORDER BY id DESC'
     );
+  
     return rows;
-=======
+
       `SELECT
         id,
         name,
@@ -131,7 +124,7 @@ class User {
       ...user,
       role: user.is_admin ? 'admin' : 'user'
     }));
->>>>>>> origin/gojiberry
+
   }
 
   static async delete(id) {
@@ -144,15 +137,10 @@ class User {
 
   static async getAdminCount() {
     const [result] = await db.query(
-<<<<<<< HEAD
-      'SELECT COUNT(*) as count FROM users WHERE role = ? AND is_active = 1',
-      ['admin']
-    );
-=======
       'SELECT COUNT(*) as count FROM users WHERE is_admin = 1'
     );
   
->>>>>>> origin/gojiberry
+
     return result[0].count;
   }
 

@@ -1,6 +1,7 @@
 // Task Owner: Muhtari Anwar - Users CRUD
 import { useEffect, useState } from 'react'
 import axiosInstance from '../../utils/axiosInstance'
+import { useAuth } from '../../context/AuthContext'
 
 
 const emptyForm = {
@@ -44,6 +45,8 @@ function Modal({ open, onClose, title, children }) {
 }
 
 export default function EmployeeList() {
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'admin'
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -113,7 +116,7 @@ export default function EmployeeList() {
       setModalOpen(false)
       await fetchUsers()
     } catch (err) {
-      setError('Failed to save user. Please try again.')
+      setError(err.response?.data?.message || 'Failed to save user. Please try again.')
     } finally {
       setSubmitting(false)
     }
@@ -141,12 +144,14 @@ export default function EmployeeList() {
           <h2 className="text-xl font-bold text-gray-900">Employee Directory</h2>
           <p className="text-sm text-gray-500">Manage employee records and roles.</p>
         </div>
-        <button type="button" onClick={openCreate} className="btn-primary">
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
-          Create User
-        </button>
+        {isAdmin && (
+          <button type="button" onClick={openCreate} className="btn-primary">
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Create User
+          </button>
+        )}
       </div>
 
       {error && (
@@ -163,13 +168,13 @@ export default function EmployeeList() {
                 <th className="px-6 py-3.5 font-semibold">Position</th>
                 <th className="px-6 py-3.5 font-semibold">Department</th>
                 <th className="px-6 py-3.5 font-semibold">Role</th>
-                <th className="px-6 py-3.5 text-right font-semibold">Actions</th>
+                {isAdmin && <th className="px-6 py-3.5 text-right font-semibold">Actions</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-gray-400">
+                  <td colSpan={isAdmin ? 6 : 5} className="px-6 py-12 text-center text-gray-400">
                     <svg className="mx-auto h-6 w-6 animate-spin text-primary-500" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
@@ -179,7 +184,7 @@ export default function EmployeeList() {
                 </tr>
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-gray-400">
+                  <td colSpan={isAdmin ? 6 : 5} className="px-6 py-12 text-center text-gray-400">
                     No employees found.
                   </td>
                 </tr>
@@ -206,30 +211,32 @@ export default function EmployeeList() {
                         {u.role || 'employee'}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => openEdit(u)}
-                          className="rounded-lg p-2 text-gray-500 transition hover:bg-primary-50 hover:text-primary-600"
-                          aria-label="Edit"
-                        >
-                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setDeleteTarget(u)}
-                          className="rounded-lg p-2 text-gray-500 transition hover:bg-red-50 hover:text-red-600"
-                          aria-label="Delete"
-                        >
-                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
-                      </div>
-                    </td>
+                    {isAdmin && (
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => openEdit(u)}
+                            className="rounded-lg p-2 text-gray-500 transition hover:bg-primary-50 hover:text-primary-600"
+                            aria-label="Edit"
+                          >
+                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setDeleteTarget(u)}
+                            className="rounded-lg p-2 text-gray-500 transition hover:bg-red-50 hover:text-red-600"
+                            aria-label="Delete"
+                          >
+                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))
               )}

@@ -10,10 +10,8 @@ import Attendance from './pages/Attendance/Attendance'
 import LeaveRequests from './pages/Leave/LeaveRequests'
 import Announcements from './pages/Announcements/Announcements'
 import NotFound from './pages/NotFound'
-<<<<<<< HEAD
-=======
 import Register from './pages/Register';
->>>>>>> origin/gojiberry
+
 
 export default function App() {
   return (
@@ -21,10 +19,8 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
-<<<<<<< HEAD
-=======
           <Route path="/register" element={<Register />} />
->>>>>>> origin/gojiberry
+
 
           <Route
             element={
