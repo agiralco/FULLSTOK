@@ -152,6 +152,7 @@ class AuthController {
       //   });
       // }
 
+
       // Check password
       let isValidPassword;
       try {
@@ -235,6 +236,7 @@ class AuthController {
             role: user.role,
             position: user.position,
             department: user.department
+
           }
         }
       });

@@ -85,9 +85,7 @@ export default function LeaveRequests() {
     setError('')
   
     try {
-      const res = isAdmin
-        ? await axiosInstance.get('/leave')
-        : await axiosInstance.get(`/leave?user_id=${user.id}`)
+      const res = await axiosInstance.get('/leave')
   
       console.log("API RESPONSE:", res.data)
   

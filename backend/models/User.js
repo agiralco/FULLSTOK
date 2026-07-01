@@ -3,15 +3,6 @@ const db = require('../config/database');
 
 class User {
   static async create(userData) {
-    const {
-      name,
-      email,
-      password,
-      role = 'user',
-      position = null,
-      department = null
-    } = userData;
-  
     const [result] = await db.query(
       `INSERT INTO users
         (name,email,password,position,department,role)
@@ -25,6 +16,31 @@ class User {
         role
       ]
     );
+    return { id: result.insertId, ...userData };
+    const {
+      name,
+      email,
+      password,
+      role = 'user',
+      position = null,
+      department = null
+    } = userData;
+  
+    const is_admin = role === 'admin' ? 1 : 0;
+  
+    const [result] = await db.query(
+      `INSERT INTO users
+        (name,email,password,position,department,is_admin)
+        VALUES (?,?,?,?,?,?)`,
+      [
+        name,
+        email,
+        password,
+        position,
+        department,
+        is_admin
+      ]
+    );
   
     return {
       id: result.insertId,
@@ -34,6 +50,7 @@ class User {
       position,
       department
     };
+
   }
 
   static async findByEmail(email) {
@@ -45,7 +62,7 @@ class User {
         password,
         position,
         department,
-        role,
+        is_admin,
         created_at
        FROM users
        WHERE email = ?`,
@@ -54,7 +71,11 @@ class User {
   
     if (!rows[0]) return null;
   
-    return rows[0];
+    return {
+      ...rows[0],
+      role: rows[0].is_admin ? 'admin' : 'user'
+    };
+
   }
 
   static async findById(id) {
@@ -65,7 +86,7 @@ class User {
         email,
         position,
         department,
-        role,
+        is_admin,
         created_at
        FROM users
        WHERE id = ?`,
@@ -74,24 +95,36 @@ class User {
   
     if (!rows[0]) return null;
   
-    return rows[0];
+    return {
+      ...rows[0],
+      role: rows[0].is_admin ? 'admin' : 'user'
+    };
+
   }
 
   static async getAll() {
     const [rows] = await db.query(
+    );
+  
+    return rows;
+
       `SELECT
         id,
         name,
         email,
         position,
         department,
-        role,
+        is_admin,
         created_at
        FROM users
        ORDER BY id DESC`
     );
   
-    return rows;
+    return rows.map(user => ({
+      ...user,
+      role: user.is_admin ? 'admin' : 'user'
+    }));
+
   }
 
   static async delete(id) {
@@ -104,9 +137,10 @@ class User {
 
   static async getAdminCount() {
     const [result] = await db.query(
-      "SELECT COUNT(*) as count FROM users WHERE role = 'admin'"
+      'SELECT COUNT(*) as count FROM users WHERE is_admin = 1'
     );
   
+
     return result[0].count;
   }
 

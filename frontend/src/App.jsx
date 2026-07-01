@@ -12,6 +12,7 @@ import Announcements from './pages/Announcements/Announcements'
 import NotFound from './pages/NotFound'
 import Register from './pages/Register';
 
+
 export default function App() {
   return (
     <AuthProvider>
@@ -19,6 +20,7 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+
 
           <Route
             element={
